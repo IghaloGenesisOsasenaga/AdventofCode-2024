@@ -14,7 +14,6 @@ dxy = [(-1, 0), (0, 1), (1, 0), (0, -1)] # up, right, down, left
 di = 0
 G[gp[0]][gp[1]] = 'X'
 vis = set()
-new_obs = set()
 while 0 <= gp[0] < n and 0 <= gp[1] < n:
     while 0 <= gp[abs(dxy[di][1])] < n:
         nxt = [gp[0]+dxy[di][0], gp[1]+dxy[di][1]]

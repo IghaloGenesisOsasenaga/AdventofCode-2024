@@ -5,34 +5,55 @@ i = 0
 while curr:
     curr = input()
     if curr:
+        G.append(list(curr))
         if '^' in curr:
             gp = [i, curr.index('^')]
-        G.append(list(curr))
+            G[i][gp[1]] = '.'
         i += 1
 n = len(G[0])
-dxy = [(-1, 0), (0, 1), (1, 0), (0, -1)] # up, right, down, left
-di = 0
-G[gp[0]][gp[1]] = 'X'
-vis = set()
-poss_obs = set()
-while 0 <= gp[0] < n and 0 <= gp[1] < n:
-    while 0 <= gp[abs(dxy[di][1])] < n:
-        nxt = [gp[0]+dxy[di][0], gp[1]+dxy[di][1]]
-        if 0 <= nxt[abs(dxy[di][1])] < n and G[nxt[0]][nxt[1]] == '#':
-            di = (di+1)%4
+dxy = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+
+def check():
+    di = 0
+    i, j = gp
+    vis = set()
+    while True:
+        nxt_i = i + dxy[di][0]
+        nxt_j = j + dxy[di][1]
+        if not (0 <= nxt_i < n and 0 <= nxt_j < n):
+            return 0
+        if (di, nxt_i, nxt_j) in vis:
+            return 1
+        if G[nxt_i][nxt_j] == '.':
+            i = nxt_i
+            j = nxt_j
+            vis.add((di, i, j))
         else:
-            if abs(dxy[di][0]): # if the row is changing
-                vis.add(f'{di} {gp[1]}') # moving along a column
-            else: # the colummn is changing
-                vis.add(f'{di} {gp[0]}') # moving along a row
-            gp[0] += dxy[di][0]
-            gp[1] += dxy[di][1]
-            if 0 <= gp[abs(dxy[di][1])] < n:
-                nxt_di = (di+1)%4
-                if nxt_di == 0 or nxt_di == 2: # up or down
-                    if f'{nxt_di} {gp[1]-dxy[di][1]}' in vis:
-                        poss_obs.add(f'{gp}')
-                else: # right or left
-                    if f'{nxt_di} {gp[0]-dxy[di][0]}' in vis:
-                        poss_obs.add(f'{gp}')
-print(len(poss_obs))
+            di = (di + 1)%4
+
+ans = 0
+di = 0
+i, j = gp
+range_ = set()
+while True:
+    nxt_i = i + dxy[di][0]
+    nxt_j = j + dxy[di][1]
+    if not (0 <= nxt_i < n and 0 <= nxt_j < n):
+        break
+    if G[nxt_i][nxt_j] == '.':
+        i = nxt_i
+        j = nxt_j
+        range_.add((i, j))
+    else:
+        di = (di + 1)%4
+
+length = len(range_)
+counter = 1
+for i,j in range_:
+    if [i, j] != gp:
+        G[i][j] = '#'
+        ans += check()
+        G[i][j] = '.'
+    print(f'{100 * (counter/length):.2f}% complete', end='\r')
+    counter += 1
+print(f'\n{ans}')
